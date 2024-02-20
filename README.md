@@ -23,9 +23,7 @@ Start the project on development mode
 ```
 pnpm dev
 ```
+![image](https://github.com/sweekruth17/react-design-editor-project/assets/55882537/40922a34-71f3-4c39-961e-a82284e0c235)
+![image](https://github.com/sweekruth17/react-design-editor-project/assets/55882537/1b22ce5d-80c4-4515-b497-0ab9db79f591)
 
-App should be running now.
 
-## Contribution
-
-Feel free to contribute by opening issues with any questions, bug reports or feature requests.
