@@ -49,6 +49,7 @@ const Common = () => {
           <Icons.Layers size={20} />
         </Button>
       </div>
+     
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
         <Button kind={KIND.tertiary} size={SIZE.compact}>
           <Icons.Expand size={16} />
@@ -108,6 +109,7 @@ const Common = () => {
           onChange={(e: any) => handleChange("zoomRatio", e.target.value)}
         />
       </div>
+
       <div style={{ display: "flex", alignItems: "center", justifyContent: "end" }}>
         <Button kind={KIND.tertiary} size={SIZE.compact}>
           <Icons.Refresh size={16} />

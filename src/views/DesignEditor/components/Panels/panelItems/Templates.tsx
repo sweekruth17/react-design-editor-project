@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { useEditor } from "@layerhub-io/react"
 import { Block } from "baseui/block"
 import { loadFonts } from "~/utils/fonts"
@@ -10,11 +10,59 @@ import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen"
 import useDesignEditorContext from "~/hooks/useDesignEditorContext"
 import useEditorType from "~/hooks/useEditorType"
 import { loadVideoEditorAssets } from "~/utils/video"
+import { Button, SHAPE } from "baseui/button"
+import { StatefulTooltip } from "baseui/tooltip"
 
 const Templates = () => {
   const editor = useEditor()
   const setIsSidebarOpen = useSetIsSidebarOpen()
   const { setCurrentScene, currentScene } = useDesignEditorContext()
+  const inputFileRef = React.useRef<HTMLInputElement>(null)
+  const addTemplate = () => {
+    inputFileRef.current?.click()
+  }
+
+  function isJsonString(strs: string) {
+    try {
+      JSON.parse(strs)
+    } catch (e) {
+      return false
+    }
+    return true
+  }
+  const [template, setTemplate] = useState(SAMPLE_TEMPLATES)
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files![0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (res) => {
+        const result = res.target!.result as string
+        const design = JSON.parse(result)
+        console.log("template json =====>", result)
+        const stringJson = result.toString()
+        const checkJson = isJsonString(stringJson)
+        if (checkJson) {
+          let scenes = design.scenes
+          // const newData = JSON.parse(scenes.toString())
+          delete design["scenes"]
+          design["layers"] = scenes[0].layers
+
+          console.log("new added design", design)
+          template.push(design)
+          setTemplate([...template]);
+       
+        }
+
+        // handleImportTemplate(design)
+      }
+      reader.onerror = (err) => {
+        console.log(err)
+      }
+
+      reader.readAsText(file)
+    }
+  }
 
   const loadTemplate = React.useCallback(
     async (template: any) => {
@@ -51,7 +99,7 @@ const Templates = () => {
           padding: "1.5rem",
         }}
       >
-        <Block>Templates</Block>
+        <Block>Templatessss</Block>
 
         <Block onClick={() => setIsSidebarOpen(false)} $style={{ cursor: "pointer", display: "flex" }}>
           <AngleDoubleLeft size={18} />
@@ -60,12 +108,43 @@ const Templates = () => {
       <Scrollable>
         <div style={{ padding: "0 1.5rem" }}>
           <div style={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "1fr 1fr" }}>
-            {SAMPLE_TEMPLATES.map((item, index) => {
+            {template.map((item, index) => {
               return <ImageItem onClick={() => loadTemplate(item)} key={index} preview={`${item.preview}?tr=w-320`} />
             })}
           </div>
         </div>
       </Scrollable>
+      {/* Adding the functionality to add more templates */}
+
+      <StatefulTooltip
+        showArrow={true}
+        overrides={{
+          Inner: {
+            style: {
+              backgroundColor: "#ffffff",
+              color: "black",
+            },
+          },
+        }}
+        content={() => <Block backgroundColor="#ffffff">Upload template in JSON format</Block>}
+      >
+        <Block>
+          <div style={{ padding: "10px 5px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {" "}
+            <Button onClick={() => addTemplate()} shape={SHAPE.pill}>
+              Add templates
+            </Button>
+            <input
+              multiple={false}
+              onChange={handleFileInput}
+              type="file"
+              id="file"
+              ref={inputFileRef}
+              style={{ display: "none" }}
+            />
+          </div>
+        </Block>
+      </StatefulTooltip>
     </Block>
   )
 }

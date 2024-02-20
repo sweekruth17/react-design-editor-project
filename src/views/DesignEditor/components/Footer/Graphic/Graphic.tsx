@@ -10,9 +10,9 @@ const Container = styled<"div", {}, Theme>("div", ({ $theme }) => ({
 
 const Graphic = () => {
   return (
-    <Container>
+    <Container>     
       <Scenes />
-      <Common />
+      <Common />     
     </Container>
   )
 }

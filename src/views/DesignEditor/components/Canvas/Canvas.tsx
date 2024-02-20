@@ -10,6 +10,7 @@ const Canvas = () => {
     <div style={{ flex: 1, display: "flex", position: "relative" }}>
       {displayPlayback && <Playback />}
       <ContextMenu />
+      
       <LayerhubCanvas
         config={{
           background: "#f1f2f6",

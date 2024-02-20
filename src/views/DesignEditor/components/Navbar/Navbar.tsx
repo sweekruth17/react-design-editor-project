@@ -14,6 +14,9 @@ import { loadVideoEditorAssets } from "~/utils/video"
 import DesignTitle from "./DesignTitle"
 import { IDesign } from "~/interfaces/DesignEditor"
 import Github from "~/components/Icons/Github"
+import html2canvas from "html2canvas"
+import { StatefulTooltip, PLACEMENT, TRIGGER_TYPE } from "baseui/tooltip"
+import {themec} from 'theme';
 
 const Container = styled<"div", {}, Theme>("div", ({ $theme }) => ({
   height: "64px",
@@ -29,6 +32,11 @@ const Navbar = () => {
   const editorType = useEditorType()
   const editor = useEditor()
   const inputFileRef = React.useRef<HTMLInputElement>(null)
+
+  // const store = createStore({
+  //   key: "x6YBr8l8UqiaPfkmcceJ",
+  //   showCredit: true,
+  // })
 
   const parseGraphicJSON = () => {
     const currentScene = editor.scene.exportToJSON()
@@ -149,7 +157,7 @@ const Navbar = () => {
       } else if (editorType === "PRESENTATION") {
         return parsePresentationJSON()
       } else {
-      return parseVideoJSON()
+        return parseVideoJSON()
       }
     }
   }
@@ -257,6 +265,24 @@ const Navbar = () => {
       reader.readAsText(file)
     }
   }
+  const exportCanvasToImage = async (canvas: any) => {
+    const image = await html2canvas(canvas)
+    return image
+  }
+
+  const makeImage = async (type: string) => {
+    const canvas = document.getElementById("layerhub_io_canvas")
+    const image = await exportCanvasToImage(canvas)
+    const imageData = image.toDataURL("image/" + type)
+
+    // Create a new anchor element and set its href attribute to the URL of the image.
+    const anchor = document.createElement("a")
+    anchor.href = imageData
+    anchor.download = "image1." + type
+
+    // Click the anchor element to download the image.
+    anchor.click()
+  }
 
   return (
     // @ts-ignore
@@ -289,8 +315,67 @@ const Navbar = () => {
           >
             Import
           </Button>
+          {/* we have to add export functionality here */}
+          <StatefulTooltip
+            content={() => (
+              <Block padding={"5px"} margin={"5px"}>
+                <div>
+                  {" "}
+                  <Button size="compact" onClick={() => makeImage("jpeg")} kind={KIND.tertiary}>
+                    To JPEG
+                  </Button>
+                </div>
 
-          <Button
+                <div>
+                  {" "}
+                  <Button size="compact" onClick={() => makeImage("png")} kind={KIND.tertiary}>
+                    To PNG
+                  </Button>
+                </div>
+                <div>
+                  {" "}
+                  <Button size="compact" onClick={makeDownloadTemplate} kind={KIND.tertiary}>
+                    To JSON
+                  </Button>
+                </div>
+                <div>
+                  {" "}
+                  <Button size="compact" onClick={() => makeImage("png")} kind={KIND.tertiary}>
+                    To MP4
+                  </Button>
+                </div>
+              </Block>
+            )}
+            placement={PLACEMENT.bottom}
+            triggerType={TRIGGER_TYPE.click}
+            showArrow
+            returnFocus
+            autoFocus
+            overrides={{
+              Inner: {
+                style: {
+                  backgroundColor: "#000",
+                  color: "black",
+                },
+              },
+            }}
+          >
+            <Button
+              size="compact"
+              kind={KIND.tertiary}
+              overrides={{
+                StartEnhancer: {
+                  style: {
+                    marginRight: "4px",
+                  },
+                },
+              }}
+            >
+              Export
+            </Button>
+          </StatefulTooltip>
+
+          {/* <Button
             size="compact"
             onClick={makeDownloadTemplate}
             kind={KIND.tertiary}
@@ -303,7 +388,7 @@ const Navbar = () => {
             }}
           >
             Export
-          </Button>
+          </Button> */}
           <Button
             size="compact"
             onClick={() => setDisplayPreview(true)}
